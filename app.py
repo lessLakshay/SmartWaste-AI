@@ -27,8 +27,6 @@ sender_email = None
 reciever_email = None
 app_pass = None
 
-msges = []
-
 #function to send automated email
 def send_alert_email(area_name, frame):
     """
@@ -221,6 +219,7 @@ else:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 placeholders[area].image(frame, channels="RGB", use_container_width=True)
         time.sleep(0.05)  # Refresh ~20 FPS
+
 
 
 
