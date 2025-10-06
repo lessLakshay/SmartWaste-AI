@@ -15,7 +15,7 @@ from email.mime.image import MIMEImage
 import gdown
 
 
-
+#downloading yolov8 paramenters saved on drive 
 MODEL_URL = "https://drive.google.com/uc?id=1ZYSRdRpFwjyYEpMMDtrpBqXgiQQe_oam"
 MODEL_PATH = "best.pt"
 
@@ -29,6 +29,7 @@ app_pass = None
 
 msges = []
 
+#function to send automated email
 def send_alert_email(area_name, frame):
     """
     Sends an email alert with an attached image frame showing garbage detection.
@@ -51,22 +52,22 @@ def send_alert_email(area_name, frame):
     Smart Garbage Detection System  
     """
 
-    # ---- Convert frame (OpenCV image) to JPEG bytes ----
+    # convert frame (opencv image) to jpeg bytes 
     _, img_encoded = cv2.imencode('.jpg', frame)
     image_bytes = img_encoded.tobytes()
 
-    # ---- Compose Email ----
+    # compose email 
     msg = MIMEMultipart()
     msg["From"] = sender_email
     msg["To"] = reciever_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
 
-    # ---- Attach Image ----
+    # attach Image
     image_part = MIMEImage(image_bytes, name=f"garbage_{area_name}.jpg")
     msg.attach(image_part)
 
-    # ---- Send ----
+    # send 
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
@@ -83,6 +84,7 @@ def send_alert_email(area_name, frame):
 model = YOLO("best.pt")
 classes = ['0', 'c', 'garbage', 'garbage_bag', 'sampah-detection', 'trash']
 
+#function to detect garbaeg in video frames
 def detect_garbage(frame):
     garbage_detected = False
     output = model(frame, stream=True)
@@ -96,15 +98,13 @@ def detect_garbage(frame):
             conf = math.ceil((box.conf[0] * 100)) / 100
             cls = int(box.cls[0])
             if conf > 0.1:
+                #drawing boundary boxes
                 cvzone.cornerRect(frame, (x1, y1, w, h), t=2)
                 cvzone.putTextRect(frame, f'{classes[cls]} {conf}', (max(0, x1), max(35, y1)), scale=1, thickness=1)
                 garbage_detected=True
     return frame, garbage_detected
 
-def show_popup():
-    st.toast("Email Sent!!")
-
-# -------------------- Video Stream Thread Class --------------------
+# Video Stream Thread Class
 class VideoStream:
     def __init__(self, source, area_name):
         self.source = source
@@ -166,7 +166,7 @@ class VideoStream:
     def resetMsg(self):
         self.msg = None
 
-# -------------------- Streamlit UI --------------------
+# Streamlit UI
 st.set_page_config(page_title="Garbage Detection Dashboard", layout="wide")
 
 if "streams" not in st.session_state:
@@ -208,7 +208,7 @@ else:
 
     st.session_state.running = True
 
-    # -------------------- Live Frame Update Loop --------------------
+    # Live Frame Update Loop 
 
     while st.session_state.running:
         for area, stream in st.session_state.streams.items():
@@ -221,5 +221,6 @@ else:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 placeholders[area].image(frame, channels="RGB", use_container_width=True)
         time.sleep(0.05)  # Refresh ~20 FPS
+
 
 
