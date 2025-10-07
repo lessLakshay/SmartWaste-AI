@@ -15,7 +15,7 @@ from email.mime.image import MIMEImage
 import gdown
 
 
-#downloading yolov8 paramenters saved on drive 
+#downloading yolov8 parameters saved on drive 
 MODEL_URL = "https://drive.google.com/uc?id=1ZYSRdRpFwjyYEpMMDtrpBqXgiQQe_oam"
 MODEL_PATH = "best.pt"
 
@@ -219,6 +219,7 @@ else:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 placeholders[area].image(frame, channels="RGB", use_container_width=True)
         time.sleep(0.05)  # Refresh ~20 FPS
+
 
 
 
